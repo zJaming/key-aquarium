@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { isLocale, useI18n } from "../i18n";
 import { ref } from "vue";
 import AppUpdatePanel from "./AppUpdatePanel.vue";
 import type { AppSettings, FishDisplayMode } from "../game/types";
+
+const { t, locale, setLocale } = useI18n();
 
 const props = defineProps<{
   settings: AppSettings;
@@ -11,6 +14,14 @@ const props = defineProps<{
 }>();
 
 const clearConfirmOpen = ref(false);
+
+/** 仅在用户操作选择器时保存语种偏好，自动匹配系统时不写入手动设置。 */
+function handleLanguageChange(event: Event): void {
+  const value = (event.target as HTMLSelectElement).value;
+  if (isLocale(value)) {
+    setLocale(value);
+  }
+}
 
 const emit = defineEmits<{
   close: [];
@@ -63,23 +74,36 @@ function confirmClearData(): void {
     <button
       type="button"
       class="settings-close absolute right-3 top-3 z-30 grid h-9 w-9 cursor-pointer place-items-center rounded-full text-xl font-bold leading-none text-[#d8fbff] transition hover:bg-[#17343f]/72"
-      aria-label="关闭设置"
+      :aria-label="t('关闭设置')"
       @click="emit('close')"
     >
       ×
     </button>
 
     <header class="settings-heading absolute left-4 top-4 z-30 sm:left-6">
-      <h2 class="settings-heading__title text-sm font-black text-[#f3ffff]">设置</h2>
-      <p class="settings-heading__kicker text-[10px] font-bold text-[#76c8d2]">Settings</p>
+      <h2 class="settings-heading__title text-sm font-black text-[#f3ffff]">{{ t('设置') }}</h2>
+      <p v-if="locale === 'zh-CN'" class="settings-heading__kicker text-[10px] font-bold text-[#76c8d2]">Settings</p>
     </header>
 
     <div class="settings-content relative z-10 mx-auto grid h-full w-full max-w-[32rem] grid-rows-[minmax(0,1fr)] px-4 pb-4 pt-14 sm:px-6 sm:pb-6 sm:pt-16">
       <section class="settings-scroll min-h-0">
         <article class="settings-tile">
+          <label for="settings-language" class="settings-tile__title">{{ t('语种') }}</label>
+          <select
+            id="settings-language"
+            :value="locale"
+            class="max-w-full cursor-pointer rounded-md border border-[#89e2eb]/30 bg-[#081c25] px-3 py-2 text-xs font-bold text-[#efffff] focus:outline-2 focus:outline-[#76c8d2]"
+            @change="handleLanguageChange"
+          >
+            <option value="zh-CN" lang="zh-CN">简体中文</option>
+            <option value="en" lang="en">English</option>
+          </select>
+        </article>
+
+        <article class="settings-tile">
           <div>
-            <h3 class="settings-tile__title">按键反馈</h3>
-            <p class="settings-tile__desc">控制进度加号和随机气泡</p>
+            <h3 class="settings-tile__title">{{ t('按键反馈') }}</h3>
+            <p class="settings-tile__desc">{{ t('控制进度加号和随机气泡') }}</p>
           </div>
           <button
             type="button"
@@ -95,15 +119,15 @@ function confirmClearData(): void {
         <article class="settings-tile settings-tile--stacked">
           <div class="settings-tile__row">
             <div>
-              <h3 class="settings-tile__title">显示少量物种</h3>
-              <p class="settings-tile__desc">调整水族箱同屏密度</p>
+              <h3 class="settings-tile__title">{{ t('显示少量物种') }}</h3>
+              <p class="settings-tile__desc">{{ t('调整水族箱同屏密度') }}</p>
             </div>
             <button
               type="button"
               class="settings-toggle"
               :class="{ 'settings-toggle--on': settings.fishDisplayMode === 'compact' }"
               :aria-pressed="settings.fishDisplayMode === 'compact'"
-              aria-label="切换显示少量物种"
+              :aria-label="t('切换显示少量物种')"
               @click="toggleFishDisplayMode"
             >
               <span class="settings-toggle__knob"></span>
@@ -113,13 +137,13 @@ function confirmClearData(): void {
 
         <footer class="settings-data">
           <div class="settings-data__header">
-            <span>数据管理</span>
+            <span>{{ t('数据管理') }}</span>
             <span v-if="message" class="settings-data__message">{{ message }}</span>
           </div>
           <div class="settings-data__actions">
-            <button type="button" class="settings-data-button" :disabled="busy" @click="emit('importData')">导入数据</button>
-            <button type="button" class="settings-data-button" :disabled="busy" @click="emit('exportData')">导出数据</button>
-            <button type="button" class="settings-data-button settings-data-button--danger" :disabled="busy" @click="openClearConfirm">清空数据</button>
+            <button type="button" class="settings-data-button" :disabled="busy" @click="emit('importData')">{{ t('导入数据') }}</button>
+            <button type="button" class="settings-data-button" :disabled="busy" @click="emit('exportData')">{{ t('导出数据') }}</button>
+            <button type="button" class="settings-data-button settings-data-button--danger" :disabled="busy" @click="openClearConfirm">{{ t('清空数据') }}</button>
           </div>
         </footer>
 
@@ -135,11 +159,11 @@ function confirmClearData(): void {
     >
       <section class="settings-confirm-card">
         <p class="settings-confirm-card__kicker">CLEAR DATA</p>
-        <h3 class="settings-confirm-card__title">清空数据？</h3>
-        <p class="settings-confirm-card__desc">物种、按键进度和成就会重置。</p>
+        <h3 class="settings-confirm-card__title">{{ t('清空数据？') }}</h3>
+        <p class="settings-confirm-card__desc">{{ t('物种、按键进度和成就会重置。') }}</p>
         <div class="settings-confirm-card__actions">
-          <button type="button" class="settings-confirm-button" @click="closeClearConfirm">取消</button>
-          <button type="button" class="settings-confirm-button settings-confirm-button--danger" @click="confirmClearData">确认清空</button>
+          <button type="button" class="settings-confirm-button" @click="closeClearConfirm">{{ t('取消') }}</button>
+          <button type="button" class="settings-confirm-button settings-confirm-button--danger" @click="confirmClearData">{{ t('确认清空') }}</button>
         </div>
       </section>
     </div>

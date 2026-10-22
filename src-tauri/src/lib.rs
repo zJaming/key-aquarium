@@ -135,6 +135,7 @@ pub fn run() {
             show_main_window,
             hide_main_window,
             open_status_panel,
+            set_app_language,
             load_external_progress_candidates
         ])
         .run(tauri::generate_context!())
@@ -295,6 +296,28 @@ fn setup_tray(app: &AppHandle) -> tauri::Result<()> {
         })
         .build(app)?;
 
+    app.manage(menu);
+    Ok(())
+}
+
+/** 同步前端确定的语种到系统托盘菜单，保持重启与手动切换行为一致。 */
+#[tauri::command]
+fn set_app_language(app: AppHandle, language: String) -> Result<(), String> {
+    let menu = app.state::<Menu<tauri::Wry>>();
+    for (id, chinese, english) in [
+        ("show", "显示窗口", "Show window"),
+        ("hide", "隐藏窗口", "Hide window"),
+        ("status", "打开状态面板", "Open statistics"),
+        ("always_on_top", "切换始终显示在最前", "Toggle always on top"),
+        ("quit", "退出", "Quit"),
+    ] {
+        if let Some(item) = menu.get(id) {
+            if let Some(item) = item.as_menuitem() {
+                item.set_text(if language == "zh-CN" { chinese } else { english })
+                    .map_err(|error| error.to_string())?;
+            }
+        }
+    }
     Ok(())
 }
 

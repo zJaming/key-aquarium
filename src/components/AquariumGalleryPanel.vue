@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from "../i18n";
 import { animate } from "animejs";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import AquariumGalleryCanvas from "./AquariumGalleryCanvas.vue";
@@ -9,6 +10,8 @@ import {
 } from "../game/fishVisualAssets";
 import type { AquariumStatus, FishId, FishRarity } from "../game/types";
 import { sortDiscoveredGalleryFish } from "../render/aquariumGalleryLayout";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   aquariumStatus: AquariumStatus;
@@ -126,7 +129,7 @@ watch(
     <button
       type="button"
       class="absolute right-3 top-3 z-40 grid h-7 w-7 cursor-pointer place-items-center rounded-full bg-[#12313a]/90 text-[#d8fbff] shadow-[inset_0_0_0_1px_rgba(122,223,236,0.35),0_0_14px_rgba(55,186,207,0.18)] transition hover:bg-[#174653]"
-      aria-label="关闭图鉴"
+      :aria-label="t('关闭图鉴')"
       @click="emit('close')"
     >
       ×
@@ -142,7 +145,7 @@ watch(
         v-else
         class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xs text-[#4e7882]"
       >
-        还没有发现物种
+        {{ t('还没有发现物种') }}
       </p>
     </div>
 
@@ -150,23 +153,23 @@ watch(
       type="button"
       class="gallery-heading-motion gallery-stats-toggle absolute bottom-3 left-4 z-30 cursor-pointer text-left text-xs font-bold text-[#72b4c0]"
       :aria-expanded="statsExpanded"
-      aria-label="查看图鉴统计"
+      :aria-label="t('查看图鉴统计')"
       @click="toggleGalleryStats"
     >
-      <span>已发现 {{ discoveredFish.length }}</span>
+      <span>{{ t('已发现 {count}', { count: discoveredFish.length }) }}</span>
     </button>
 
     <section
       v-if="statsExpanded"
       class="gallery-stats-popover absolute bottom-9 left-4 z-30 min-w-[8.5rem] rounded-md px-3 py-2 text-xs font-bold text-[#d8fbff]"
-      aria-label="图鉴统计"
+      :aria-label="t('图鉴统计')"
     >
       <p class="flex items-center justify-between gap-4">
-        <span class="text-[#72b4c0]">已发现种类</span>
+        <span class="text-[#72b4c0]">{{ t('已发现种类') }}</span>
         <strong>{{ discoveredFish.length }}</strong>
       </p>
       <p class="mt-1 flex items-center justify-between gap-4">
-        <span class="text-[#72b4c0]">已获得总数</span>
+        <span class="text-[#72b4c0]">{{ t('已获得总数') }}</span>
         <strong>{{ aquariumStatus.collectedFishCount }}</strong>
       </p>
     </section>
@@ -209,7 +212,7 @@ watch(
           <span
             class="truncate text-left"
             :class="getFishNameClass(selectedFish.rarity)"
-            >{{ selectedFish.name }}</span
+            >{{ t(selectedFish.name) }}</span
           >
           <span class="shrink-0 text-right text-[#72b4c0]"
             >×{{ selectedFish.count }}</span
@@ -219,7 +222,7 @@ watch(
         <button
           type="button"
           class="fish-detail-close absolute bottom-0 left-1/2 z-10 h-9 w-9 -translate-x-1/2 translate-y-1/2 cursor-pointer rounded-full bg-[#10252d] text-[#d8fbff] shadow-[0_8px_18px_rgba(0,0,0,0.34)] transition hover:bg-[#17343f]"
-          aria-label="关闭物种详情"
+          :aria-label="t('关闭物种详情')"
           @click="closeFishDetail"
         >
           <span

@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { useI18n } from "../i18n";
 import achievementIcon from "../assets/action-icons/achievement.png";
 import galleryIcon from "../assets/action-icons/gallery.png";
 import settingsIcon from "../assets/action-icons/settings.png";
 import statusIcon from "../assets/action-icons/status.png";
+
+const { t } = useI18n();
 
 defineProps<{
   visible: boolean;
@@ -36,7 +39,7 @@ const emit = defineEmits<{
         :aria-label="devGrantButtonLabel"
         @click="emit('grantTestSpecies')"
       >
-        <span class="sm:hidden">测</span>
+        <span class="sm:hidden">{{ t('测') }}</span>
         <span class="hidden sm:inline">{{ devGrantButtonLabel }}</span>
       </button>
 
@@ -46,7 +49,7 @@ const emit = defineEmits<{
         :aria-label="devBenthicButtonLabel"
         @click="emit('grantBenthicTestSpecies')"
       >
-        <span class="sm:hidden">底</span>
+        <span class="sm:hidden">{{ t('底') }}</span>
         <span class="hidden sm:inline">{{ devBenthicButtonLabel }}</span>
       </button>
 
@@ -56,7 +59,7 @@ const emit = defineEmits<{
         :aria-label="devAchievementButtonLabel"
         @click="emit('grantTestAchievements')"
       >
-        <span class="sm:hidden">成</span>
+        <span class="sm:hidden">{{ t('成') }}</span>
         <span class="hidden sm:inline">{{ devAchievementButtonLabel }}</span>
       </button>
     </div>
@@ -68,7 +71,7 @@ const emit = defineEmits<{
         v-if="achievementVisible"
         type="button"
         class="hud-action-icon"
-        aria-label="打开成就"
+        :aria-label="t('打开成就')"
         @click="emit('openAchievements')"
       >
         <img
@@ -82,7 +85,7 @@ const emit = defineEmits<{
       <button
         type="button"
         class="hud-action-icon"
-        aria-label="打开图鉴"
+        :aria-label="t('打开图鉴')"
         @click="emit('openGallery')"
       >
         <img
@@ -96,7 +99,7 @@ const emit = defineEmits<{
       <button
         type="button"
         class="hud-action-icon"
-        aria-label="打开状态面板"
+        :aria-label="t('打开状态面板')"
         @click="emit('openStatus')"
       >
         <img
@@ -110,7 +113,7 @@ const emit = defineEmits<{
       <button
         type="button"
         class="hud-action-icon"
-        aria-label="打开设置"
+        :aria-label="t('打开设置')"
         @click="emit('openSettings')"
       >
         <img

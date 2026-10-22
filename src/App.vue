@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import AchievementPanel from "./components/AchievementPanel.vue";
 import AquariumGalleryPanel from "./components/AquariumGalleryPanel.vue";
 import AquariumCanvas from "./components/AquariumCanvas.vue";
@@ -8,6 +8,7 @@ import SettingsPanel from "./components/SettingsPanel.vue";
 import StatusPanel from "./components/StatusPanel.vue";
 import TopActionButtons from "./components/TopActionButtons.vue";
 import WindowDragHandle from "./components/WindowDragHandle.vue";
+import { useI18n } from "./i18n";
 import packageInfo from "../package.json";
 import { initializeAppUpdates } from "./platform/updateService";
 import {
@@ -22,6 +23,7 @@ import {
   queryKeyboardPermission,
   readJsonTextFromDialog,
   saveJsonTextToDialog,
+  setAppLanguage,
   startWindowDrag,
   startWindowResizeDrag,
 } from "./platform/tauri";
@@ -29,6 +31,7 @@ import { useProgressStore } from "./store/progressStore";
 import type { AppSettings } from "./game/types";
 import type { PermissionStatusPayload, ResizeDirection } from "./platform/tauri";
 
+const { t, locale } = useI18n();
 const progressStore = useProgressStore();
 const statusOpen = ref(false);
 const galleryOpen = ref(false);
@@ -40,9 +43,16 @@ const lastPressedSignal = ref<{ keyId: string; sequence: number } | null>(null);
 const settingsBusy = ref(false);
 const settingsMessage = ref("");
 const isDevMode = import.meta.env.DEV;
-const devGrantButtonLabel = isDevMode ? "测试物种" : "";
-const devBenthicButtonLabel = isDevMode ? "测试底栖" : "";
-const devAchievementButtonLabel = isDevMode ? "测试成就" : "";
+const devGrantButtonLabel = computed(() => isDevMode ? t("测试物种") : "");
+const devBenthicButtonLabel = computed(() => isDevMode ? t("测试底栖") : "");
+const devAchievementButtonLabel = computed(() => isDevMode ? t("测试成就") : "");
+/** 同步文档与托盘语种，让原生菜单及辅助技术遵循当前选择。 */
+watchEffect(() => {
+  const language = locale.value;
+  document.documentElement.lang = language;
+  void runOptionalStartupTask(() => setAppLanguage(language));
+});
+
 const unlisteners: Array<() => void> = [];
 const browserPressedKeyIds = new Set<string>();
 let autoCollectTimer: number | null = null;
@@ -489,7 +499,7 @@ onBeforeUnmount(() => {
         v-if="settingsOpen"
         :settings="progressStore.state.progress.settings"
         :busy="settingsBusy"
-        :message="settingsMessage"
+        :message="t(settingsMessage)"
         :app-version="packageInfo.version"
         @clear-data="handleClearData"
         @close="settingsOpen = false"

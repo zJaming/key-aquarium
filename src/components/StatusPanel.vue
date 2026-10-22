@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useI18n } from "../i18n";
 import { computed } from "vue";
 import type { KeyPressStat } from "../game/types";
 import { getKeyDisplayLabel } from "../game/keyboardLayout";
+
+const { t, locale } = useI18n();
 
 const props = defineProps<{
   totalPresses: number;
@@ -18,7 +21,7 @@ const topKeyMaxCount = computed(() => Math.max(1, ...visibleTopKeys.value.map((k
 
 /** 格式化按键次数，避免大数字挤压面板。 */
 function formatCount(value: number): string {
-  return new Intl.NumberFormat("zh-CN").format(value);
+  return new Intl.NumberFormat(locale.value).format(value);
 }
 
 /** 格式化键帽上的紧凑次数，避免 k、m 级别数字挤压布局。 */
@@ -63,7 +66,7 @@ function getKeyRankClass(index: number): string {
 <template>
   <aside
     class="status-console absolute inset-0 z-20 overflow-hidden rounded-lg text-[#d8fbff]"
-    aria-label="状态控制台"
+    :aria-label="t('状态控制台')"
   >
     <div class="status-console__scanline" aria-hidden="true"></div>
     <div class="status-console__bubbles" aria-hidden="true"></div>
@@ -72,7 +75,7 @@ function getKeyRankClass(index: number): string {
       <button
         type="button"
         class="grid h-7 w-7 cursor-pointer place-items-center rounded-full bg-[#12313a]/90 text-[#d8fbff] shadow-[inset_0_0_0_1px_rgba(122,223,236,0.35),0_0_14px_rgba(55,186,207,0.18)] transition hover:bg-[#174653]"
-        aria-label="关闭状态面板"
+        :aria-label="t('关闭状态面板')"
         @click="emit('close')"
       >
         ×
@@ -85,11 +88,11 @@ function getKeyRankClass(index: number): string {
         <strong class="status-counter__number block max-w-full text-[clamp(1.75rem,12vw,3.25rem)] leading-none text-[#e9ffff]">
           {{ formatCount(todayPresses) }}
         </strong>
-        <span class="text-[10px] text-[#6daeba]">今日按键</span>
+        <span class="text-[10px] text-[#6daeba]">{{ t('今日按键') }}</span>
       </section>
 
       <section class="status-nameplate mx-auto grid w-full max-w-[18rem] grid-cols-[1fr_auto] gap-3 px-3 text-[11px] text-[#9ad6de]">
-        <span class="grid place-items-center justify-self-start">累计</span>
+        <span class="grid place-items-center justify-self-start">{{ t('累计') }}</span>
         <strong class="grid place-items-center justify-self-end font-bold text-[#d8fbff]">{{ formatCount(totalPresses) }}</strong>
       </section>
 
@@ -108,7 +111,7 @@ function getKeyRankClass(index: number): string {
               class="status-keycap"
               :class="getKeyRankClass(index)"
               role="listitem"
-              :aria-label="`${getKeyDisplayLabel(key.keyId)}，第 ${index + 1} 名，${formatCount(key.pressCount)} 次`"
+              :aria-label="t('{key}，第 {rank} 名，{count} 次', { key: getKeyDisplayLabel(key.keyId), rank: index + 1, count: formatCount(key.pressCount) })"
             >
               <span class="status-keycap__meter" :style="{ height: getKeyMeterHeight(key) }"></span>
               <span class="status-keycap__rank">#{{ index + 1 }}</span>
@@ -119,7 +122,7 @@ function getKeyRankClass(index: number): string {
         </div>
 
         <p v-else class="status-empty mx-auto grid h-full min-h-[5rem] max-w-[18rem] place-items-center px-4 text-center text-xs text-[#70a7b0]">
-          等待按键信号
+          {{ t('等待按键信号') }}
         </p>
       </section>
     </div>

@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 import { Application, Container, FederatedPointerEvent, Graphics, Rectangle, Text, TextStyle } from "pixi.js";
 import { AQUARIUM_TANK_DISPLAY_LIMIT } from "../game/constants";
 import { getFishVisualPixelBounds, getFishVisualPixelRects } from "../game/fishVisualAssets";
@@ -1814,13 +1815,15 @@ function updateMarqueeText(texts: Text[], mask: Graphics, status: AquariumStatus
     return;
   }
 
-  showQueuedMarqueeText(texts, [{ message: MARQUEE_PLACEHOLDER_TEXT, color: MARQUEE_PLACEHOLDER_COLOR }], now, 0, MARQUEE_PLACEHOLDER_SCROLL_MS);
+  showQueuedMarqueeText(texts, [{ message: t(MARQUEE_PLACEHOLDER_TEXT), color: MARQUEE_PLACEHOLDER_COLOR }], now, 0, MARQUEE_PLACEHOLDER_SCROLL_MS);
 }
 
 /** 把跑马灯事件转换成渲染项，只保留显示需要的文案和颜色。 */
 function createMarqueeItems(events: AquariumStatus["marqueeEvents"]): MarqueeDisplayItem[] {
   return events.map((event) => ({
-    message: event.message,
+    message: event.type === "achievement"
+      ? t("达成 {name}", { name: t(event.message.slice(3)) })
+      : t("获得 {name}", { name: t(event.message.slice(3)) }),
     color: event.color,
   }));
 }
@@ -1835,7 +1838,7 @@ function showQueuedMarqueeText(texts: Text[], items: MarqueeDisplayItem[], now: 
   const maskX = MARQUEE_X + 4;
   const maskWidth = MARQUEE_WIDTH - 8;
   const enterX = maskX + maskWidth;
-  const safeItems = items.length > 0 ? items : [{ message: MARQUEE_PLACEHOLDER_TEXT, color: MARQUEE_PLACEHOLDER_COLOR }];
+  const safeItems = items.length > 0 ? items : [{ message: t(MARQUEE_PLACEHOLDER_TEXT), color: MARQUEE_PLACEHOLDER_COLOR }];
   const itemStride = maskWidth;
   const offset = (elapsed / normalizedDuration) * itemStride;
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from "../i18n";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import type { CSSProperties } from "vue";
 import lockedAchievementIcon from "../assets/achievement-icons/locked-mystery.png";
@@ -15,6 +16,8 @@ import {
 } from "../game/achievementMap";
 import { ACHIEVEMENT_DEFINITIONS } from "../game/constants";
 import type { AchievementId, AchievementStatusItem } from "../game/types";
+
+const { t, locale } = useI18n();
 
 type AchievementViewport = {
   x: number;
@@ -112,8 +115,8 @@ const selectedAchievement = computed<AchievementDetailView | null>(() => {
 
   return {
     id: definition.id,
-    name: hidden ? "???" : definition.name,
-    description: hidden ? "???" : definition.description,
+    name: hidden ? "???" : t(definition.name),
+    description: hidden ? "???" : t(definition.description),
     unlocked,
     hidden,
     unlockedAt: unlockedAchievement?.unlockedAt ?? null,
@@ -179,7 +182,7 @@ function isAchievementHiddenBeforeUnlock(achievementId: AchievementId): boolean 
 
 /** 格式化成就达成日期，保持弹窗信息短而明确。 */
 function formatUnlockedAt(unlockedAt: number): string {
-  return new Intl.DateTimeFormat("zh-CN", {
+  return new Intl.DateTimeFormat(locale.value, {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -360,7 +363,7 @@ onBeforeUnmount(() => {
     <button
       type="button"
       class="absolute right-3 top-3 z-40 grid h-7 w-7 cursor-pointer place-items-center rounded-full bg-[#12313a]/90 text-[#d8fbff] shadow-[inset_0_0_0_1px_rgba(122,223,236,0.35),0_0_14px_rgba(55,186,207,0.18)] transition hover:bg-[#174653]"
-      aria-label="关闭成就"
+      :aria-label="t('关闭成就')"
       @click="emit('close')"
     >
       ×
@@ -369,7 +372,7 @@ onBeforeUnmount(() => {
     <section
       ref="mapViewportRef"
       class="achievement-map-viewport relative z-10 h-full w-full overflow-hidden"
-      aria-label="成就星图"
+      :aria-label="t('成就星图')"
       @pointerdown="handleMapPointerDown"
       @pointermove="handleMapPointerMove"
       @pointerup="handleMapPointerUp"
@@ -408,7 +411,7 @@ onBeforeUnmount(() => {
             { 'achievement-node--locked': !node.unlocked },
           ]"
           :style="getAchievementNodeStyle(node)"
-          :aria-label="node.unlocked ? '查看已获得成就详情' : '查看未获得成就详情'"
+          :aria-label="t(node.unlocked ? '查看已获得成就详情' : '查看未获得成就详情')"
           @pointerdown.stop="handleNodePointerDown($event, node.id)"
           @click.stop="handleNodeClick(node.id)"
         >
@@ -427,7 +430,7 @@ onBeforeUnmount(() => {
     </section>
 
     <div class="achievement-map-hint absolute bottom-3 left-3 z-30" aria-hidden="true">
-      拖动、缩放查看
+      {{ t('拖动、缩放查看') }}
     </div>
 
     <div
@@ -447,13 +450,13 @@ onBeforeUnmount(() => {
         <h2 :class="[selectedAchievement.unlocked ? 'mt-4 text-[#ffdc6e]' : 'mt-2 text-[#7c9ca2]', 'text-lg font-bold']">{{ selectedAchievement.name }}</h2>
         <p class="mt-2 text-xs leading-5 text-[#9dcbd3]">{{ selectedAchievement.description }}</p>
         <p class="mt-4 text-[11px] font-bold text-[#6ea5ad]">
-          {{ selectedAchievement.unlocked && selectedAchievement.unlockedAt ? formatUnlockedAt(selectedAchievement.unlockedAt) : "未达成" }}
+          {{ selectedAchievement.unlocked && selectedAchievement.unlockedAt ? formatUnlockedAt(selectedAchievement.unlockedAt) : t("未达成") }}
         </p>
 
         <button
           type="button"
           class="achievement-detail-close absolute bottom-0 left-1/2 grid h-9 w-9 -translate-x-1/2 translate-y-1/2 cursor-pointer place-items-center rounded-full bg-[#10252d] text-xl font-bold leading-none text-[#d8fbff] shadow-[0_8px_18px_rgba(0,0,0,0.34)] transition hover:bg-[#17343f]"
-          aria-label="关闭成就详情"
+          :aria-label="t('关闭成就详情')"
           @click="closeAchievementDetail"
         >
           ×

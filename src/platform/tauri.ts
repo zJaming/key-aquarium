@@ -1,3 +1,4 @@
+import { t, type Locale } from "../i18n";
 import { invoke } from "@tauri-apps/api/core";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
@@ -36,6 +37,13 @@ export interface SaveTextFileOptions {
 /** 判断当前是否运行在 Tauri 环境内。 */
 export function isTauriRuntime(): boolean {
   return "__TAURI_INTERNALS__" in window;
+}
+
+/** 把当前界面语种同步到原生托盘，浏览器预览无需执行原生命令。 */
+export async function setAppLanguage(language: Locale): Promise<void> {
+  if (isTauriRuntime()) {
+    await invoke("set_app_language", { language });
+  }
 }
 
 /** 监听原生侧发送的全局键盘按压事件。 */
@@ -151,7 +159,7 @@ export async function readJsonTextFromDialog(): Promise<string | null> {
   const selectedPath = await open({
     multiple: false,
     filters: [{
-      name: "Key Aquarium 数据",
+      name: t("Key Aquarium 数据"),
       extensions: ["json"],
     }],
   });
@@ -173,7 +181,7 @@ export async function saveJsonTextToDialog(options: SaveTextFileOptions): Promis
   const selectedPath = await save({
     defaultPath: options.defaultPath,
     filters: [{
-      name: "Key Aquarium 数据",
+      name: t("Key Aquarium 数据"),
       extensions: ["json"],
     }],
   });
