@@ -115,12 +115,14 @@ const LEGACY_BUNDLE_IDENTIFIERS: [&str; 2] =
     ["com.keyboardfarm.desktop", "com.keyaquarium.desktop"];
 const PROGRESS_STORE_FILENAMES: [&str; 2] = ["key-aquarium.json", "keyboard-farm.json"];
 
-/** 运行 Tauri 应用并注册托盘、菜单和键盘监听能力。 */
+/** 运行 Tauri 应用并注册托盘、键盘监听及签名更新能力。 */
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::default().build())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             setup_tray(app.handle())?;
             start_macos_keyboard_listeners(app.handle().clone());

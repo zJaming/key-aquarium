@@ -1,6 +1,6 @@
 [package]
 name = "key-aquarium"
-version = "0.1.1"
+version = "0.1.2"
 description = "Key Aquarium 透明桌面水族箱"
 authors = ["KeyAquarium"]
 license = "MIT"
@@ -21,6 +21,8 @@ tauri = { version = "2.11.0", features = ["tray-icon", "image-png", "macos-priva
 tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
 tauri-plugin-store = "2.4.3"
+tauri-plugin-process = "2.3.1"
+tauri-plugin-updater = "2.10.1"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 block2 = "0.6.2"

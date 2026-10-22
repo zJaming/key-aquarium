@@ -74,6 +74,22 @@ describe("进度 store 场景隔离", () => {
     vi.useRealTimers();
   });
 
+  /** 更新重启时立即持久化仍在防抖队列里的最新按键，并取消旧定时器。 */
+  it("重启前主动保存最新进度，不等待防抖定时器", async () => {
+    const set = vi.fn();
+    const save = vi.fn();
+    vi.doMock("../src/platform/tauri", () => ({ isTauriRuntime: () => true }));
+    vi.doMock("@tauri-apps/plugin-store", () => ({ Store: { load: vi.fn(async () => ({ set, save })) } }));
+    const store = await createFreshProgressStore();
+    store.recordKeyPress("KeyA", BASE_NOW);
+    expect(save).not.toHaveBeenCalled();
+    await store.flushProgress();
+    expect(set).toHaveBeenCalledWith("progress", expect.objectContaining({ totalPresses: 1 }));
+    expect(save).toHaveBeenCalledOnce();
+    await vi.advanceTimersByTimeAsync(300);
+    expect(save).toHaveBeenCalledOnce();
+  });
+
   it("水族箱场景的按键和定时器不会触发农场自动收取", async () => {
     const store = await createFreshProgressStore();
 

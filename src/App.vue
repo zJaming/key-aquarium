@@ -9,6 +9,7 @@ import StatusPanel from "./components/StatusPanel.vue";
 import TopActionButtons from "./components/TopActionButtons.vue";
 import WindowDragHandle from "./components/WindowDragHandle.vue";
 import packageInfo from "../package.json";
+import { initializeAppUpdates } from "./platform/updateService";
 import {
   listenAlwaysOnTopToggle,
   listenKeyboardPermissionChange,
@@ -378,12 +379,13 @@ function handleResizeStart(event: MouseEvent, direction: ResizeDirection): void 
   void startWindowResizeDrag(direction);
 }
 
-/** 初始化存档、窗口偏好和输入监听。 */
+/** 初始化存档、窗口偏好和输入监听，再后台检查应用更新。 */
 async function initializeApp(): Promise<void> {
   await progressStore.loadProgress();
   await setupInputListeners();
   await runOptionalStartupTask(setupWindowBoundsPersistence);
   await runOptionalStartupTask(syncPermissionStatus);
+  void runOptionalStartupTask(initializeAppUpdates);
 }
 
 onMounted(() => {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import AppUpdatePanel from "./AppUpdatePanel.vue";
 import type { AppSettings, FishDisplayMode } from "../game/types";
 
 const props = defineProps<{
@@ -122,7 +123,8 @@ function confirmClearData(): void {
           </div>
         </footer>
 
-        <p class="settings-credit">Key Aquarium · v{{ appVersion }}</p>
+        <AppUpdatePanel :app-version="appVersion" />
+        <p class="settings-credit">Key Aquarium</p>
       </section>
     </div>
 

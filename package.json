@@ -1,6 +1,6 @@
 {
   "name": "key-aquarium",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,8 @@
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run",
     "lint": "vue-tsc --noEmit",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "release:manifest": "node scripts/create-update-manifest.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.11.0",
@@ -19,7 +20,9 @@
     "animejs": "^4.4.1",
     "gsap": "^3.15.0",
     "pixi.js": "^8.18.1",
-    "vue": "^3.5.34"
+    "vue": "^3.5.34",
+    "@tauri-apps/plugin-process": "^2.3.1",
+    "@tauri-apps/plugin-updater": "^2.10.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.4",

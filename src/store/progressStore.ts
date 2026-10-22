@@ -69,6 +69,7 @@ export function useProgressStore() {
     grantBenthicTestSpecies,
     updateSettings,
     exportProgress,
+    flushProgress,
     importProgress,
     clearProgressKeepingSettings,
     switchScene,
@@ -319,6 +320,15 @@ async function saveProgress(): Promise<void> {
   const store = await getStore();
 
   await saveProgressToStore(store, state.progress);
+}
+
+/** 更新重启前立即保存最新进度，避免丢失尚在防抖等待中的按键。 */
+async function flushProgress(): Promise<void> {
+  if (saveTimer !== null) {
+    window.clearTimeout(saveTimer);
+    saveTimer = null;
+  }
+  await saveProgress();
 }
 
 /** 将指定进度保存到给定 store，供正常保存和旧存档迁移复用。 */
