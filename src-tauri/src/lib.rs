@@ -31,7 +31,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::image::Image;
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::TrayIconBuilder;
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, PhysicalRect, PhysicalSize};
 
 #[cfg(target_os = "macos")]
 static KEYBOARD_LISTENER_STARTED: AtomicBool = AtomicBool::new(false);
@@ -134,6 +134,7 @@ pub fn run() {
             set_main_window_always_on_top,
             show_main_window,
             hide_main_window,
+            ensure_main_window_visible,
             open_status_panel,
             set_app_language,
             load_external_progress_candidates
@@ -173,14 +174,66 @@ fn set_main_window_always_on_top(app: AppHandle, enabled: bool) -> Result<(), St
         .map_err(|error| error.to_string())
 }
 
-/** 显示主窗口并把焦点交还给应用。 */
+/** 显示主窗口前修正屏幕外的位置，并恢复最小化状态后交还焦点。 */
 #[tauri::command]
 fn show_main_window(app: AppHandle) -> Result<(), String> {
+    ensure_main_window_visible(app.clone())?;
     let window = app
         .get_webview_window("main")
         .ok_or_else(|| "找不到主窗口".to_string())?;
     window.show().map_err(|error| error.to_string())?;
+    window.unminimize().map_err(|error| error.to_string())?;
     window.set_focus().map_err(|error| error.to_string())
+}
+
+/** 检查窗口在工作区内是否留有可操作区域，允许多屏布局使用负坐标。 */
+fn has_visible_window_area(
+    position: PhysicalPosition<i32>,
+    size: PhysicalSize<u32>,
+    area: PhysicalRect<i32, u32>,
+    scale_factor: f64,
+) -> bool {
+    // 统一在物理像素下计算交集，避免 Retina 缩放及负坐标影响判断。
+    let overlap_width = (i64::from(position.x) + i64::from(size.width))
+        .min(i64::from(area.position.x) + i64::from(area.size.width))
+        - i64::from(position.x).max(i64::from(area.position.x));
+    let overlap_height = (i64::from(position.y) + i64::from(size.height))
+        .min(i64::from(area.position.y) + i64::from(area.size.height))
+        - i64::from(position.y).max(i64::from(area.position.y));
+    let minimum_visible = (48.0 * scale_factor).ceil() as i64;
+    overlap_width >= minimum_visible.min(i64::from(size.width)).min(i64::from(area.size.width))
+        && overlap_height >= minimum_visible.min(i64::from(size.height)).min(i64::from(area.size.height))
+}
+
+/** 把失去可见工作区的窗口移回主屏幕，避免旧屏幕布局使应用看似消失。 */
+#[tauri::command]
+fn ensure_main_window_visible(app: AppHandle) -> Result<(), String> {
+    let window = app
+        .get_webview_window("main")
+        .ok_or_else(|| "找不到主窗口".to_string())?;
+    let monitors = window.available_monitors().map_err(|error| error.to_string())?;
+    let Some(fallback) = monitors.first() else {
+        return Ok(());
+    };
+    let position = window.outer_position().map_err(|error| error.to_string())?;
+    let size = window.outer_size().map_err(|error| error.to_string())?;
+    if monitors.iter().any(|monitor| {
+        has_visible_window_area(position, size, *monitor.work_area(), monitor.scale_factor())
+    }) {
+        return Ok(());
+    }
+
+    let monitor = window.primary_monitor().map_err(|error| error.to_string())?
+        .unwrap_or_else(|| fallback.clone());
+    let area = monitor.work_area();
+    let fitted_size = PhysicalSize::new(size.width.min(area.size.width), size.height.min(area.size.height));
+    if fitted_size != size {
+        window.set_size(fitted_size).map_err(|error| error.to_string())?;
+    }
+    window.set_position(PhysicalPosition::new(
+        area.position.x + ((area.size.width - fitted_size.width) / 2) as i32,
+        area.position.y + ((area.size.height - fitted_size.height) / 2) as i32,
+    )).map_err(|error| error.to_string())
 }
 
 /** 隐藏主窗口但保留托盘入口。 */
@@ -816,4 +869,53 @@ fn emit_keyboard_permission(app: &AppHandle) {
         "keyboard-permission-changed",
         current_keyboard_permission_status(),
     );
+}
+
+#[cfg(test)]
+mod window_visibility_tests {
+    use super::has_visible_window_area;
+    use tauri::{PhysicalPosition, PhysicalRect, PhysicalSize};
+
+    /** 用实际故障坐标验证两块现有屏幕都不能接触到该窗口。 */
+    #[test]
+    fn detects_reported_offscreen_window() {
+        let position = PhysicalPosition::new(-658, 1214);
+        let size = PhysicalSize::new(658, 466);
+        for area in [
+            PhysicalRect { position: PhysicalPosition::new(0, 25), size: PhysicalSize::new(1440, 875) },
+            PhysicalRect { position: PhysicalPosition::new(1440, -1020), size: PhysicalSize::new(1080, 1920) },
+        ] {
+            assert!(!has_visible_window_area(position, size, area, 1.0));
+        }
+    }
+
+    /** 左侧副屏的负坐标是合法位置，不能简单按坐标正负重置窗口。 */
+    #[test]
+    fn preserves_visible_negative_monitor_position() {
+        assert!(has_visible_window_area(
+            PhysicalPosition::new(-658, 300), PhysicalSize::new(658, 466),
+            PhysicalRect { position: PhysicalPosition::new(-1920, 0), size: PhysicalSize::new(1920, 1080) }, 1.0,
+        ));
+    }
+
+    /** 部分跨屏窗口仍可操作时保留位置，仅贴边或剩一条细线时应恢复。 */
+    #[test]
+    fn distinguishes_partial_visibility_from_edge_contact() {
+        let area = PhysicalRect { position: PhysicalPosition::new(0, 0), size: PhysicalSize::new(1440, 900) };
+        let size = PhysicalSize::new(658, 466);
+        assert!(has_visible_window_area(PhysicalPosition::new(-300, 100), size, area, 1.0));
+        assert!(!has_visible_window_area(PhysicalPosition::new(-658, 100), size, area, 1.0));
+        assert!(!has_visible_window_area(PhysicalPosition::new(-657, 100), size, area, 1.0));
+        assert!(!has_visible_window_area(PhysicalPosition::new(100, 899), size, area, 1.0));
+    }
+
+    /** Retina 屏幕的最小可见区域按缩放换算，小窗口则按自身尺寸判断。 */
+    #[test]
+    fn accounts_for_retina_scale_and_small_windows() {
+        let area = PhysicalRect { position: PhysicalPosition::new(0, 0), size: PhysicalSize::new(2880, 1800) };
+        let size = PhysicalSize::new(658, 466);
+        assert!(!has_visible_window_area(PhysicalPosition::new(-594, 100), size, area, 2.0));
+        assert!(has_visible_window_area(PhysicalPosition::new(-562, 100), size, area, 2.0));
+        assert!(has_visible_window_area(PhysicalPosition::new(100, 100), PhysicalSize::new(40, 40), area, 2.0));
+    }
 }

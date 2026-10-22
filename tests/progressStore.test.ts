@@ -296,6 +296,33 @@ describe("进度 store 场景隔离", () => {
     expect(applyWindowBounds).toHaveBeenCalledWith(savedProgress.windowBounds);
   });
 
+  it("恢复时会把修正后的可见位置保存，避免重启再次回到屏幕外", async () => {
+    const correctedBounds = { x: 300, y: 200, width: 658, height: 466 };
+    const storeSet = vi.fn();
+    const savedProgress = {
+      ...createInitialProgress(BASE_NOW),
+      windowBounds: { x: -658, y: 1214, width: 658, height: 466 },
+    };
+    vi.doMock("../src/platform/tauri", () => ({
+      applyWindowBounds: vi.fn(),
+      isTauriRuntime: () => true,
+      loadExternalProgressCandidates: vi.fn(async () => []),
+      readCurrentWindowBounds: vi.fn(async () => correctedBounds),
+      setWindowAlwaysOnTop: vi.fn(),
+    }));
+    vi.doMock("@tauri-apps/plugin-store", () => ({
+      Store: {
+        load: vi.fn(async () => ({ get: vi.fn(async () => savedProgress), set: storeSet, save: vi.fn() })),
+      },
+    }));
+    const store = await createFreshProgressStore();
+    await store.loadProgress();
+    await store.restoreWindowBounds();
+    await store.flushProgress();
+    expect(store.state.progress.windowBounds).toEqual(correctedBounds);
+    expect(storeSet).toHaveBeenCalledWith("progress", expect.objectContaining({ windowBounds: correctedBounds }));
+  });
+
   it("窗口移动或缩放后会记录新的窗口位置尺寸", async () => {
     vi.resetModules();
 

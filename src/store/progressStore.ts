@@ -136,9 +136,10 @@ async function loadProgress(): Promise<void> {
   await setWindowAlwaysOnTop(state.progress.alwaysOnTop);
 }
 
-/** 按存档恢复窗口位置和尺寸。 */
+/** 恢复窗口后记录实际位置，避免下一次启动再次使用屏幕外的旧坐标。 */
 async function restoreWindowBounds(): Promise<void> {
   await applyWindowBounds(state.progress.windowBounds);
+  await captureWindowBounds();
 }
 
 /** 记录一次键盘按压并调度保存。 */

@@ -264,7 +264,7 @@ export async function readCurrentWindowBounds(): Promise<WindowBounds | null> {
   };
 }
 
-/** 按已保存的外部位置和尺寸恢复主窗口。 */
+/** 恢复保存的位置尺寸后校验当前屏幕布局，屏幕外窗口由原生端移回可见区域。 */
 export async function applyWindowBounds(bounds: WindowBounds | null): Promise<void> {
   if (!isTauriRuntime() || !bounds) {
     return;
@@ -274,6 +274,7 @@ export async function applyWindowBounds(bounds: WindowBounds | null): Promise<vo
 
   await window.setSize(new PhysicalSize(bounds.width, bounds.height));
   await window.setPosition(new PhysicalPosition(bounds.x, bounds.y));
+  await invoke("ensure_main_window_visible");
 }
 
 /** 请求原生侧显示主窗口。 */
