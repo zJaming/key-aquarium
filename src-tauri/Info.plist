@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>NSHumanReadableCopyright</key>
+  <string>Copyright © 2026 Jaming.</string>
+  <key>NSInputMonitoringUsageDescription</key>
+  <string>敲敲养鱼需要读取全局按键次数来推进水族箱进度。</string>
+</dict>
+</plist>

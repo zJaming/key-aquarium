@@ -1,0 +1,48 @@
+{
+  "name": "key-aquarium",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 1420",
+    "build": "vue-tsc --noEmit && vite build",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "lint": "vue-tsc --noEmit",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/plugin-dialog": "~2.7.1",
+    "@tauri-apps/plugin-fs": "~2.5.1",
+    "@tauri-apps/plugin-store": "^2.4.3",
+    "animejs": "^4.4.1",
+    "gsap": "^3.15.0",
+    "pixi.js": "^8.18.1",
+    "vue": "^3.5.34"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.4",
+    "@tauri-apps/cli": "^2.11.1",
+    "@vitejs/plugin-vue": "^6.0.6",
+    "autoprefixer": "^10.5.0",
+    "jsdom": "^29.1.1",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^4.2.4",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.11",
+    "vitest": "^4.1.5",
+    "vue-tsc": "^3.2.8"
+  },
+  "description": "敲敲养鱼：用日常按键养一缸像素小鱼的透明桌面水族箱",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zJaming/key-aquarium.git"
+  },
+  "packageManager": "pnpm@9.7.0",
+  "engines": {
+    "node": "^22.13.0 || >=24.0.0",
+    "pnpm": ">=9"
+  }
+}
