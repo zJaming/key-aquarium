@@ -1,10 +1,14 @@
-# Key Aquarium
+# <img src="src-tauri/icons/128x128.png" width="36" alt=""> Key Aquarium
 
 **A small underwater world, grown one keystroke at a time.**
 
 English · [简体中文](README.zh-CN.md)
 
 Key Aquarium is a pixel aquarium for your desktop. Keep it beside your work and let everyday typing bring new creatures into the tank. Discover species, earn achievements, or take a moment to make some bubbles.
+
+![Key Aquarium with a sample collection of pixel fish](assets/screenshots/aquarium.jpg)
+
+*Shown with a sample collection.*
 
 Built with Vue 3, TypeScript, PixiJS, and Tauri 2. The desktop app currently targets **macOS**, and its interface is in Simplified Chinese.
 

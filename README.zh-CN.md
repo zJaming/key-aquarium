@@ -1,10 +1,14 @@
-# Key Aquarium · 敲敲养鱼
+# <img src="src-tauri/icons/128x128.png" width="36" alt=""> Key Aquarium
 
 **每敲一次键盘，让桌面上的海底世界生长一点。**
 
 [English](README.md) · 简体中文
 
 Key Aquarium 是一个像素风桌面水族箱。把它放在工作区一角，日常打字就能迎来新的水族箱居民。慢慢收集物种、解锁成就，或在忙碌间隙点几个气泡。
+
+![Key Aquarium 像素水族箱与演示物种收藏](assets/screenshots/aquarium.jpg)
+
+_画面使用演示收藏数据。_
 
 使用 Vue 3、TypeScript、PixiJS 和 Tauri 2 构建。目前桌面端主要面向 **macOS**，应用界面使用简体中文。
 
@@ -86,12 +90,12 @@ pnpm dev
 
 ### 检查与构建
 
-| 命令 | 用途 |
-| --- | --- |
-| `pnpm typecheck` | 检查 TypeScript 和 Vue 类型 |
-| `pnpm test` | 运行单元测试 |
-| `pnpm build` | 检查类型并构建前端 |
-| `pnpm tauri build` | 构建 macOS 桌面安装包 |
+| 命令               | 用途                        |
+| ------------------ | --------------------------- |
+| `pnpm typecheck`   | 检查 TypeScript 和 Vue 类型 |
+| `pnpm test`        | 运行单元测试                |
+| `pnpm build`       | 检查类型并构建前端          |
+| `pnpm tauri build` | 构建 macOS 桌面安装包       |
 
 前端构建产物位于 `dist/`，桌面构建产物位于 `src-tauri/target/release/bundle/`。
 
