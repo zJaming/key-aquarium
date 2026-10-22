@@ -151,7 +151,7 @@ export async function readJsonTextFromDialog(): Promise<string | null> {
   const selectedPath = await open({
     multiple: false,
     filters: [{
-      name: "敲敲养鱼数据",
+      name: "Key Aquarium 数据",
       extensions: ["json"],
     }],
   });
@@ -173,7 +173,7 @@ export async function saveJsonTextToDialog(options: SaveTextFileOptions): Promis
   const selectedPath = await save({
     defaultPath: options.defaultPath,
     filters: [{
-      name: "敲敲养鱼数据",
+      name: "Key Aquarium 数据",
       extensions: ["json"],
     }],
   });

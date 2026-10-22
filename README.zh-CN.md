@@ -12,7 +12,7 @@ Key Aquarium 是一个像素风桌面水族箱。把它放在工作区一角，�
 
 **[下载 macOS 安装包 · 支持 Apple Silicon 与 Intel](https://github.com/zJaming/key-aquarium/releases/latest/download/Key-Aquarium-macOS-universal.dmg)**
 
-打开 `.dmg`，将 **敲敲养鱼.app** 拖入 **Applications（应用程序）** 后启动。按照[权限与隐私](#权限与隐私)中的说明授予辅助功能权限，即可启用全局按键统计。
+打开 `.dmg`，将 **Key Aquarium.app** 拖入 **Applications（应用程序）** 后启动。按照[权限与隐私](#权限与隐私)中的说明授予辅助功能权限，即可启用全局按键统计。
 
 应用使用本地临时签名，尚未经 Apple 公证。macOS 可能阻止首次启动，请先阅读 [Apple 关于安全打开应用的说明](https://support.apple.com/en-us/102445)，再决定是否允许打开。
 

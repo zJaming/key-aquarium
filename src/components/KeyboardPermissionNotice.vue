@@ -11,10 +11,10 @@ const emit = defineEmits<{
   >
     <div class="text-xs font-bold text-[#ffe3a6]">后台记录未启用</div>
     <p class="mt-1 text-[11px] leading-4 text-[#f4d59b]">
-      请在 系统设置 &gt; 隐私与安全性 &gt; 辅助功能 中允许敲敲养鱼。
+      请在 系统设置 &gt; 隐私与安全性 &gt; 辅助功能 中允许 Key Aquarium。
     </p>
     <p class="mt-1 text-[11px] leading-4 text-[#d9b36f]">
-      如果已经开启仍提示，请关闭后重新开启；仍无效时用列表下方 “-” 移除旧项，再重新添加敲敲养鱼。
+      如果已经开启仍提示，请关闭后重新开启；仍无效时用列表下方 “-” 移除旧项，再重新添加 Key Aquarium。
     </p>
     <button
       type="button"

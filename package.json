@@ -1,6 +1,6 @@
 {
   "name": "key-aquarium",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -34,7 +34,7 @@
     "vitest": "^4.1.5",
     "vue-tsc": "^3.2.8"
   },
-  "description": "敲敲养鱼：用日常按键养一缸像素小鱼的透明桌面水族箱",
+  "description": "Key Aquarium：用日常按键养一缸像素小鱼的透明桌面水族箱",
   "license": "MIT",
   "repository": {
     "type": "git",

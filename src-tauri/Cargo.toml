@@ -1,7 +1,7 @@
 [package]
 name = "key-aquarium"
-version = "0.1.0"
-description = "透明桌面敲敲养鱼"
+version = "0.1.1"
+description = "Key Aquarium 透明桌面水族箱"
 authors = ["KeyAquarium"]
 license = "MIT"
 repository = "https://github.com/zJaming/key-aquarium"

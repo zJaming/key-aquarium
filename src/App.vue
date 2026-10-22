@@ -235,7 +235,7 @@ async function runOptionalStartupTask(task: () => Promise<void>): Promise<void> 
   try {
     await task();
   } catch (error) {
-    console.warn("敲敲养鱼启动辅助任务失败", error);
+    console.warn("Key Aquarium 启动辅助任务失败", error);
   }
 }
 
@@ -309,7 +309,7 @@ async function handleExportData(): Promise<void> {
     const exportedAt = Date.now();
     const progress = progressStore.exportProgress();
     const saved = await saveJsonTextToDialog({
-      defaultPath: `敲敲养鱼-${formatExportDay(exportedAt)}.json`,
+      defaultPath: `Key-Aquarium-${formatExportDay(exportedAt)}.json`,
       contents: JSON.stringify({
         app: "key-aquarium",
         exportedAt,

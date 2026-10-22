@@ -136,7 +136,7 @@ pub fn run() {
             load_external_progress_candidates
         ])
         .run(tauri::generate_context!())
-        .expect("启动敲敲养鱼失败");
+        .expect("启动 Key Aquarium 失败");
 }
 
 /** 查询键盘监听权限状态，非 macOS 默认返回可用。 */
@@ -283,7 +283,7 @@ fn setup_tray(app: &AppHandle) -> tauri::Result<()> {
     )?;
 
     TrayIconBuilder::with_id("key-aquarium")
-        .tooltip("敲敲养鱼")
+        .tooltip("Key Aquarium")
         .icon(create_tray_icon())
         .icon_as_template(true)
         .menu(&menu)

@@ -12,7 +12,7 @@ Built with Vue 3, TypeScript, PixiJS, and Tauri 2. The desktop app currently tar
 
 **[Download for macOS · Apple Silicon & Intel](https://github.com/zJaming/key-aquarium/releases/latest/download/Key-Aquarium-macOS-universal.dmg)**
 
-Open the `.dmg`, drag **敲敲养鱼.app** to **Applications**, and launch it. Grant the [Accessibility permission](#permissions--privacy) to enable global key detection.
+Open the `.dmg`, drag **Key Aquarium.app** to **Applications**, and launch it. Grant the [Accessibility permission](#permissions--privacy) to enable global key detection.
 
 The app uses ad-hoc signing and has not been notarized by Apple. macOS may block the first launch; consult [Apple's guide to opening apps safely](https://support.apple.com/en-us/102445) before deciding whether to allow it.
 
