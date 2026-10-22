@@ -6,21 +6,23 @@
 
 Key Aquarium 是一个像素风桌面水族箱。把它放在工作区一角，日常打字就能迎来新的水族箱居民。慢慢收集物种、解锁成就，或在忙碌间隙点几个气泡。
 
-![Key Aquarium 像素水族箱与演示物种收藏](assets/screenshots/aquarium.jpg)
+![Key Aquarium 像素水族箱与演示物种收藏](assets/screenshots/aquarium-zh-CN.jpg)
 
 _画面使用演示收藏数据。_
 
-使用 Vue 3、TypeScript、PixiJS 和 Tauri 2 构建。目前桌面端主要面向 **macOS**，应用界面使用简体中文。
+使用 Vue 3、TypeScript、PixiJS 和 Tauri 2 构建。目前桌面端主要面向 **macOS**，应用支持简体中文与英文，可在设置中切换。
 
 ## 下载
 
 **[下载 macOS 安装包 · 支持 Apple Silicon 与 Intel](https://github.com/zJaming/key-aquarium/releases/latest/download/Key-Aquarium-macOS-universal.dmg)**
 
-打开 `.dmg`，将 **Key Aquarium.app** 拖入 **Applications（应用程序）** 后启动。按照[权限与隐私](#权限与隐私)中的说明授予辅助功能权限，即可启用全局按键统计。
+打开 `.dmg`，将 **Key Aquarium.app** 拖入 **Applications（应用程序）** 后启动。
 
-应用使用本地临时签名，尚未经 Apple 公证。macOS 可能阻止首次启动，请先阅读 [Apple 关于安全打开应用的说明](https://support.apple.com/en-us/102445)，再决定是否允许打开。
+> **首次启动：** 应用尚未经 Apple 公证。若被 macOS 拦截，确认安装包来源可信后，前往「**系统设置 → 隐私与安全性**」，点击「**仍要打开**」，再确认「**打开**」。
 
-[所有版本](https://github.com/zJaming/key-aquarium/releases)中提供更新说明和 SHA-256 校验文件，应用更新需手动下载安装。
+按照[权限与隐私](#权限与隐私)中的说明授予辅助功能权限，即可在使用其他应用时累计按键。
+
+[所有版本](https://github.com/zJaming/key-aquarium/releases)中提供更新说明和 SHA-256 校验文件，从 v0.1.2 起，可以在设置中检查更新、下载并安装，再自行选择重启。v0.1.0 和 v0.1.1 用户需先手动安装一次新版 `.dmg`，才能使用此功能。
 
 Windows 和 Linux 暂未实现全局键盘监听。
 
@@ -28,7 +30,7 @@ Windows 和 Linux 暂未实现全局键盘监听。
 
 1. 正常打字，每次按键都会推进当前养成周期。
 2. 进度满后，自动获得一位水族箱居民，加入收藏。
-3. 随即进入下一轮，不同品质对应不同的进度目标。
+3. 随即进入下一轮，等待下一位新朋友。
 
 每轮也可能获得已经收集过的物种。
 
@@ -36,7 +38,7 @@ Windows 和 Linux 暂未实现全局键盘监听。
 
 ### 认识水族箱居民
 
-共有 **169 种物种**，分为普通、稀有、珍奇和传说四种品质。除了鱼，还有海马、水母、螃蟹等水生生物。打开图鉴，可以查看已经发现的物种和等待解锁的收藏。
+日常打字会逐渐迎来形态各异的水族箱居民，打开图鉴，可以回顾已经遇见的面孔。还有哪些新朋友，就留给你慢慢发现。
 
 ### 按自己的节奏养鱼
 
@@ -98,6 +100,19 @@ pnpm dev
 | `pnpm tauri build` | 构建 macOS 桌面安装包       |
 
 前端构建产物位于 `dist/`，桌面构建产物位于 `src-tauri/target/release/bundle/`。
+
+### 签名更新包
+
+更新包需要签名密钥。发行自己的版本时，运行 `pnpm tauri signer generate -w /仓库外的路径/updater.key`，并将生成的公钥填入 `src-tauri/tauri.conf.json` 的 `plugins.updater.pubkey`。私钥应保存在仓库外并做好备份。
+
+```sh
+TAURI_SIGNING_PRIVATE_KEY=/仓库外的路径/updater.key \
+TAURI_SIGNING_PRIVATE_KEY_PASSWORD='' pnpm tauri build
+```
+
+构建通用包前需安装 `aarch64-apple-darwin` 和 `x86_64-apple-darwin` 两个 Rust target，并在构建命令后加上 `--target universal-apple-darwin`。
+
+发布更新时，将通用更新包命名为 `Key-Aquarium-macOS-universal.app.tar.gz`，签名文件使用相同名称再加 `.sig`。运行 `pnpm release:manifest /发布产物目录`，把更新包、签名和生成的 `latest.json` 上传到对应的 GitHub Release。两个 macOS 架构使用同一个通用包；Fork 发行还需修改更新源地址，以及 `scripts/create-update-manifest.mjs` 中的仓库地址。
 
 ## 许可证
 

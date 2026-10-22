@@ -6,21 +6,23 @@ English · [简体中文](README.zh-CN.md)
 
 Key Aquarium is a pixel aquarium for your desktop. Keep it beside your work and let everyday typing bring new creatures into the tank. Discover species, earn achievements, or take a moment to make some bubbles.
 
-![Key Aquarium with a sample collection of pixel fish](assets/screenshots/aquarium.jpg)
+![Key Aquarium with a sample collection of pixel fish](assets/screenshots/aquarium-en.jpg)
 
-*Shown with a sample collection.*
+*Sample collection shown in the English interface.*
 
-Built with Vue 3, TypeScript, PixiJS, and Tauri 2. The desktop app currently targets **macOS**, and its interface is in Simplified Chinese.
+Built with Vue 3, TypeScript, PixiJS, and Tauri 2. The desktop app currently targets **macOS**, with English and Simplified Chinese interfaces.
 
 ## Download
 
 **[Download for macOS · Apple Silicon & Intel](https://github.com/zJaming/key-aquarium/releases/latest/download/Key-Aquarium-macOS-universal.dmg)**
 
-Open the `.dmg`, drag **Key Aquarium.app** to **Applications**, and launch it. Grant the [Accessibility permission](#permissions--privacy) to enable global key detection.
+Open the `.dmg`, drag **Key Aquarium.app** to **Applications**, then launch it.
 
-The app uses ad-hoc signing and has not been notarized by Apple. macOS may block the first launch; consult [Apple's guide to opening apps safely](https://support.apple.com/en-us/102445) before deciding whether to allow it.
+> **First launch:** This build is not notarized by Apple. If macOS blocks it and you trust the download, go to **System Settings → Privacy & Security**, choose **Open Anyway**, and confirm **Open**.
 
-See [all releases](https://github.com/zJaming/key-aquarium/releases) for version notes and SHA-256 checksums. Updates are installed manually.
+Grant the [Accessibility permission](#permissions--privacy) to count keystrokes while using other apps.
+
+See [all releases](https://github.com/zJaming/key-aquarium/releases) for version notes and SHA-256 checksums. Starting with v0.1.2, Settings lets you check for updates, download and install them, then restart when ready. If you use v0.1.0 or v0.1.1, install a newer `.dmg` once to get this feature.
 
 Windows and Linux global keyboard monitoring are not implemented yet.
 
@@ -28,7 +30,7 @@ Windows and Linux global keyboard monitoring are not implemented yet.
 
 1. Type as usual. Each key press advances the current aquarium cycle.
 2. When the cycle completes, a creature joins your collection automatically.
-3. A new cycle begins, with a different progress target depending on its rarity.
+3. A new cycle begins, ready for your next discovery.
 
 A cycle can yield a species you already own.
 
@@ -36,7 +38,7 @@ The **+** button on the tank also advances progress. These clicks are tracked se
 
 ### Meet the residents
 
-Discover **169 species** in four rarity tiers: Common, Rare, Curio, and Legendary. The collection includes fish, seahorses, jellyfish, crabs, and other aquatic creatures. Open the gallery to see what you have found and what remains to discover.
+Meet a growing collection of aquatic creatures, each with its own pixel-art silhouette. Open the gallery to revisit the residents you have found. Leave the rest for your next discovery.
 
 ### Make it your own
 
@@ -98,6 +100,19 @@ Development mode includes buttons for previewing species and achievements. They 
 | `pnpm tauri build` | Build the macOS desktop bundles |
 
 Frontend files are written to `dist/`; desktop bundles are written to `src-tauri/target/release/bundle/`.
+
+### Signing update bundles
+
+Update packages require a signing key. For your own distribution, generate a key with `pnpm tauri signer generate -w /path/outside/repo/updater.key`, and replace `plugins.updater.pubkey` in `src-tauri/tauri.conf.json` with the generated public key. Keep the private key outside the repository and back it up.
+
+```sh
+TAURI_SIGNING_PRIVATE_KEY=/path/outside/repo/updater.key \
+TAURI_SIGNING_PRIVATE_KEY_PASSWORD='' pnpm tauri build
+```
+
+For a universal build, install both Rust targets (`aarch64-apple-darwin` and `x86_64-apple-darwin`) and add `--target universal-apple-darwin` to the build command.
+
+To publish updates, rename the universal archive to `Key-Aquarium-macOS-universal.app.tar.gz` and its signature to the same name plus `.sig`. Run `pnpm release:manifest /path/to/release-assets`, then upload the archive, signature, and generated `latest.json` to the matching GitHub Release. Both macOS architectures use the same universal archive. Forks must also change the updater endpoint and the repository URL in `scripts/create-update-manifest.mjs`.
 
 ## License
 
